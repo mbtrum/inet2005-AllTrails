@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace AllTrails.Controllers
 {
-    [Authorize(Roles = "Admin")] // restrict access to this controller to Admin only
+    //[Authorize(Roles = "Admin")] // restrict access to this controller to Admin only
     public class TrailsController : Controller
     {
         private readonly AllTrailsContext _context;

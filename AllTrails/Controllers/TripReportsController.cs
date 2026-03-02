@@ -101,7 +101,7 @@ namespace AllTrails.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Rating,Name,TrailId")] TripReport tripReport)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Rating,Description,CreatedDate,TrailId")] TripReport tripReport)
         {
             if (id != tripReport.Id)
             {
