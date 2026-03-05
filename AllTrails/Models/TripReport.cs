@@ -25,5 +25,8 @@ namespace AllTrails.Models
 
         [ValidateNever]
         public Trail Trail { get; set; } = null!; // nav property
+
+        // To store the logged in User Id creating the record
+        public string CreatedBy { get; set; } = string.Empty!;
     }
 }
