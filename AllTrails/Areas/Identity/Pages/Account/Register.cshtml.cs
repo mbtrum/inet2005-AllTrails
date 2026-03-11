@@ -2,14 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
+using AllTrails.Data;
+using AllTrails.Models;
+using Azure;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +13,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Numerics;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Threading;
+using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace AllTrails.Areas.Identity.Pages.Account
 {
@@ -30,12 +35,20 @@ namespace AllTrails.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
+        private readonly AllTrailsContext _context; // CUSTOM
+
+        // CUSTOM: the user's public display name
+        [BindProperty]
+        public string Name { get; set; }
+        // END
+
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            AllTrailsContext context) // CUSTOM
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -43,6 +56,8 @@ namespace AllTrails.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+
+            _context = context; // CUSTOM
         }
 
         /// <summary>
@@ -108,6 +123,14 @@ namespace AllTrails.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            // CUSTOM: add a condition to make name required. If blank, return the page with a validation error
+            if (string.IsNullOrEmpty(Name))
+            {
+                ModelState.AddModelError("Name", "Your name is required to register.");
+                return Page();
+            }
+            // END
+
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
@@ -122,9 +145,18 @@ namespace AllTrails.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    await _userManager.AddToRoleAsync(user, "Reviewer"); // Add a default role for new users
+                    await _userManager.AddToRoleAsync(user, "Reviewer"); // CUSTOM: Add a default role for new users
 
                     var userId = await _userManager.GetUserIdAsync(user);
+
+                    // CUSTOM: add user profile record with Name
+                    UserProfile userProfile = new UserProfile();
+                    userProfile.IdentityId = userId;
+                    userProfile.Name = Name;
+                    _context.Add(userProfile);
+                    await _context.SaveChangesAsync();
+                    // END
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(

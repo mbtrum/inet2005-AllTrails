@@ -4,6 +4,7 @@ using AllTrails.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AllTrails.Migrations
 {
     [DbContext(typeof(AllTrailsContext))]
-    partial class AllTrailsContextModelSnapshot : ModelSnapshot
+    [Migration("20260311120306_AddUserProfile")]
+    partial class AddUserProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,7 +61,7 @@ namespace AllTrails.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Trail", (string)null);
+                    b.ToTable("Trail");
                 });
 
             modelBuilder.Entity("AllTrails.Models.TripReport", b =>
@@ -91,7 +94,7 @@ namespace AllTrails.Migrations
 
                     b.HasIndex("TrailId");
 
-                    b.ToTable("TripReport", (string)null);
+                    b.ToTable("TripReport");
                 });
 
             modelBuilder.Entity("AllTrails.Models.UserProfile", b =>
@@ -105,7 +108,7 @@ namespace AllTrails.Migrations
 
                     b.HasKey("IdentityId");
 
-                    b.ToTable("UserProfile", (string)null);
+                    b.ToTable("UserProfile");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

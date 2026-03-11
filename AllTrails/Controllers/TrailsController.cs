@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace AllTrails.Controllers
 {
-    
+    [Authorize]
     public class TrailsController : Controller
     {
         private readonly AllTrailsContext _context;
