@@ -1,4 +1,3 @@
 <Solution>
-  <Project Path="../../../../dotnet/AllTrails/IdentityConsoleApp/IdentityConsoleApp.csproj" />
   <Project Path="AllTrails/AllTrails.csproj" />
 </Solution>
